@@ -13,7 +13,7 @@ from pygame.locals import *
 
 # pygame setup
 pygame.init()
-SCREEN_WIDTH = 700
+SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
@@ -22,9 +22,11 @@ DT = 0 #delta time
 
 class Entity:
     """
-    Models an entity (human) in the SIR model. Entity contains information about it's own
-    position in the 'World' (aka on the screen) but besides that contains only information
-    about it's own status. It is unable to interact with other Entity object.
+    Models an entity (human) in the SIR model.
+    Entity contains information about it's own position in the 'World'
+    (aka on the screen) but besides that contains only information
+    about it's own status.
+    It is unable to interact with other Entity object.
     """
     def __init__(self, size=4, color=Color(0, 255, 255)):
         #Position and destination
@@ -83,6 +85,9 @@ class Entity:
         the location resets.
         Destinations can be visualized, or not. This does not change the random walk
         behaviour.
+        DEPRECATED. This function can still be called in World.run()
+        instead of go_to_destination_w_velocity(), but will prevent World.social_distance()
+        from functioning properly.
         """
         pygame.draw.circle(screen, Color(10, 10, 10), (self.x_destination, self.y_destination), 2)
         dx = self.x_destination - self.x
@@ -167,11 +172,12 @@ class Entity:
 
 class World:
     """
-    World controls the simulation. It contains a list of entities and handles controlling and
-    displaying them, as well as regulating the interactions between then and the behaviour of
-    the 'disease'.
-    The disease has no class of it's own, it's behaviour is handled by World, and individual
-    Entity Objects regulate their own health.
+    World controls the simulation.
+    It contains a list of entities and handles controlling and
+    displaying them, as well as regulating the interactions between
+    them and the behaviour of the 'disease'.
+    The disease has no class of it's own, it's behaviour is handled
+    by World, and individual Entity Objects regulate their own health.
     """
     def __init__(self, N_of_entities, starting_N_infected):
         self.entities = []
@@ -183,8 +189,8 @@ class World:
 
     def run(self):
         """
-        Runs the simulation. Moves all entities and updates their status each tick.
-        Also spreads disease and applies social distancing.
+        Runs the simulation. Moves all entities and updates their status
+        each tick. Also spreads disease and applies social distancing.
         """
         for entity in self.entities:
             entity.go_to_destination_w_velocity()
@@ -202,7 +208,7 @@ class World:
 
     def spread_disease(self):
         """
-        Can be used to spread the disease within a World Object simulation.
+        Can be used to spread the disease within a World simulation.
         """
         # Set chance of infection
         infection_chance = 5 #in 1000 per frame
@@ -222,11 +228,11 @@ class World:
 
     def social_distance(self):
         """
-        Can be used to make Entities avoid each other. Change 'distancing_strength' to control the
-        strength of this effect.
-        Directly alters the positions of Entities in World.
+        Can be used to make Entities avoid each other.
+        Change 'distancing_strength' to control the strength of this effect.
+        Directly alters the velocity (and thus positions) of Entities in World.
         """
-        distancing_strength = 0.005
+        distancing_strength = 0.009
         # Check distance between all entities
         for entity in self.entities:
             for otherentity in self.entities:
@@ -240,6 +246,7 @@ class World:
 
 #Creating the 'World' object. Parameters control the number of entities in the simulation
 #as well as the amount of entities that start the simulation 'infected'
+#(In this example, we start with 100 entities, 10 of which are infected)
 sim = World(100, 10)
 
 # This while loop handles the display and runs the simulation
@@ -248,7 +255,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("maroon")
+    screen.fill("black")
     # sim = World Object. Controls and draws the simulated entities.
     sim.run()
     sim.draw_entities()
