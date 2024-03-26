@@ -10,6 +10,7 @@ import random
 import math
 import pygame
 from pygame.locals import *
+from entity import Entity
 
 # pygame setup
 pygame.init()
@@ -20,7 +21,7 @@ clock = pygame.time.Clock()
 running = True
 DT = 0 #delta time
 
-class Entity:
+class OldEntity:
     """
     Models an entity (human) in the SIR model.
     Entity contains information about it's own position in the 'World'
@@ -183,7 +184,7 @@ class World:
         self.entities = []
         self.starting_N_infected = starting_N_infected
         for _ in range(N_of_entities):
-            self.entities.append(Entity())
+            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT))
         for i in range(starting_N_infected):
             self.entities[i].infect()
 
@@ -204,7 +205,10 @@ class World:
         Draws all entities in the simulation
         """
         for entity in self.entities:
-            entity.draw()
+            #entity.draw()
+            pygame.draw.circle(screen, entity.color, (entity.x, entity.y), entity.size)
+            if entity.infected:
+                pygame.draw.circle(screen, entity.color, (entity.x, entity.y), entity.active_spread, 1)
 
     def spread_disease(self):
         """
@@ -232,7 +236,7 @@ class World:
         Change 'distancing_strength' to control the strength of this effect.
         Directly alters the velocity (and thus positions) of Entities in World.
         """
-        distancing_strength = 0.009
+        distancing_strength = 0.01
         # Check distance between all entities
         for entity in self.entities:
             for otherentity in self.entities:
