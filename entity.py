@@ -5,9 +5,9 @@ from pygame.locals import *
 class Entity:
     """
     Models an entity (human) in the SIR model.
-    Entity contains information about it's own position in the 'World'
-    (aka on the screen) but besides that contains only information
-    about it's own status.
+    Entity contains information about its own position in the 'World'
+    (aka on the screen) but besides that contains only information about its own status.
+    Needs to be given Screen width and height upon initiation in order to generate correct coordinates.
     It is unable to interact with other Entity object.
     """
     def __init__(self, screen_width, screen_height, size=4, color=Color(0, 255, 255)):
@@ -35,12 +35,6 @@ class Entity:
         self.cure_speed = 0.01
         self.infection_time = random.randint(500, 5000)
 
-    # def draw(self):
-    #     """ Draws the Entity, plus their radius of infection once infected """
-    #     pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
-    #     if self.infected:
-    #         pygame.draw.circle(screen, self.color, (self.x, self.y), self.active_spread, 1)
-
     def update_status(self):
         """
         Updates the Entities' status. This function should only be called on
@@ -61,55 +55,11 @@ class Entity:
         self.x += x
         self.y += y
 
-    def go_to_destination(self):
-        """
-        Implements a 'random walk' by assigning Entity a 'destination' to move to.
-        Destinations are randomly assigned within the boundaries of the screen
-        (minus a small margin). Once an Entity gets close enough to it's destination
-        the location resets.
-        Destinations can be visualized, or not. This does not change the random walk
-        behaviour.
-        DEPRECATED. This function can still be called in World.run()
-        instead of go_to_destination_w_velocity(), but will prevent World.social_distance()
-        from functioning properly.
-        """
-        #pygame.draw.circle(screen, Color(10, 10, 10), (self.x_destination, self.y_destination), 2)
-        dx = self.x_destination - self.x
-        dy = self.y_destination - self.y
-        if abs(dx) <= 20 and abs(dy) <= 20:
-            self.x_destination = random.randint(0, self.screen_width)
-            self.y_destination = random.randint(0, self.screen_height)
-        if abs(dx) > self.maxspeed:
-            if dx < 0:
-                dx = self.maxspeed * -1
-            else:
-                dx = self.maxspeed
-        if abs(dy) > self.maxspeed:
-            if dy < 0:
-                dy = self.maxspeed * -1
-            else:
-                dy = self.maxspeed
-        if abs(dx) < self.minspeed:
-            if dx < 0:
-                dx = self.minspeed * -1
-            else:
-                dx = self.minspeed
-        if abs(dy) < self.minspeed:
-            if dy < 0:
-                dy = self.minspeed * -1
-            else:
-                dy = self.minspeed
-
-        #self.vx += dx/100
-        #self.vy += dy/100
-        self.x += dx/5
-        self.y += dy/5
-
     def go_to_destination_w_velocity(self):
         """
         Implements a 'random walk' by assigning Entity a 'destination' to move to.
         Destinations are randomly assigned within the boundaries of the screen
-        (minus a small margin). Once an Entity gets close enough to it's destination
+        (minus a small margin). Once an Entity gets close enough to its destination
         the location resets.
         Destinations can be visualized, or not. This does not change the random walk
         behaviour.
@@ -150,6 +100,6 @@ class Entity:
         self.y += self.vy
 
     def infect(self):
-        """ Infect the entity, changing it's color (to orange, currently) """
+        """ Infect the entity, changing its color (to orange, currently) """
         self.infected = True
         self.color = Color(250, 200, 0)
