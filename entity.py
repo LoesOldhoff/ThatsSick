@@ -10,7 +10,7 @@ class Entity:
     Needs to be given Screen width and height upon initiation in order to generate correct coordinates.
     It is unable to interact with other Entity object.
     """
-    def __init__(self, screen_width, screen_height, size=4, color=Color(0, 255, 255)):
+    def __init__(self, screen_width, screen_height, spread, cure_speed, size=4, color=Color(0, 255, 255)):
         #Position and destination
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -30,9 +30,9 @@ class Entity:
         #Status
         self.infected = False
         self.immune = False
-        self.spread = 15
+        self.spread = spread
         self.active_spread = 0
-        self.cure_speed = 0.01
+        self.cure_speed = cure_speed
         self.infection_time = random.randint(500, 5000)
 
     def update_status(self):
@@ -42,13 +42,13 @@ class Entity:
         radius and count down their time-till-cured.
         Will render entities 'immune' once their timers run out.
         """
-        if self.active_spread < self.spread:
+        if self.active_spread <= self.spread:
             self.active_spread += 0.3
-        self.infection_time -= 1
-        if self.infection_time < 0:
-            self.infected = False
+        self.infection_time -= self.cure_speed
+        if self.infection_time <= 0:
             self.immune = True
             self.color = Color(0, 100, 200)
+            self.infected = False
 
     def manual_move(self, x, y):
         """ Applies force to Entity """

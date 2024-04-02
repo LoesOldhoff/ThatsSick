@@ -12,6 +12,15 @@ import pygame
 from pygame.locals import *
 from entity import Entity
 
+# Arbitrary numbers needed for the simulation
+SOCIAL_DISTANCING_STRENGTH = 0.5  # Works best between 0 and 1
+SOCIAL_DISTANCING_DISTANCE = 10  # Radius in pixels
+INFECTION_CHANCE = 5  # in 1000 per frame
+ENTITIES_TOTAL = 200
+ENTITIES_START_INFECTED = 7  # Must be less than ENTITIES_TOTAL
+DISEASE_SPREAD = 30  # Radius in pixels
+ENTITY_CURE_SPEED = 10
+
 # pygame setup
 pygame.init()
 SCREEN_WIDTH = 900
@@ -34,7 +43,7 @@ class World:
         self.entities = []
         self.starting_N_infected = starting_N_infected
         for _ in range(N_of_entities):
-            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT))
+            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT, DISEASE_SPREAD, ENTITY_CURE_SPEED))
         for i in range(starting_N_infected):
             self.entities[i].infect()
 
@@ -45,7 +54,7 @@ class World:
         """
         for entity in self.entities:
             entity.go_to_destination_w_velocity()
-            if entity.infected:
+            if entity.infected and not entity.immune:
                 entity.update_status()
         self.social_distance()
         self.spread_disease()
@@ -55,7 +64,6 @@ class World:
         Draws all entities in the simulation
         """
         for entity in self.entities:
-            #entity.draw()
             pygame.draw.circle(screen, entity.color, (entity.x, entity.y), entity.size)
             if entity.infected:
                 pygame.draw.circle(screen, entity.color, (entity.x, entity.y), entity.active_spread, 1)
@@ -64,19 +72,19 @@ class World:
         """
         Can be used to spread the disease within a World simulation.
         """
-        # Set chance of infection
-        infection_chance = 5 #in 1000 per frame
         for entity in self.entities:
             if entity.infected:
                 # If an entity is infected, check all other entities to find
                 # the ones in the infected's radius
                 for otherentity in self.entities:
+                    if otherentity.immune:
+                        continue
                     dx = entity.x - otherentity.x
                     dy = entity.y - otherentity.y
                     dist = math.sqrt(dx**2 + dy**2)
                     # Calculate infection chance for close entities
                     if dist < entity.active_spread and dist != 0:
-                        if random.randint(0, 500) < infection_chance:
+                        if random.randint(0, 500) < INFECTION_CHANCE:
                             # And infect em!
                             otherentity.infect()
 
@@ -86,7 +94,6 @@ class World:
         Change 'distancing_strength' to control the strength of this effect.
         Directly alters the velocity (and thus positions) of Entities in World.
         """
-        distancing_strength = 0.01
         # Check distance between all entities
         for entity in self.entities:
             for otherentity in self.entities:
@@ -94,14 +101,15 @@ class World:
                 dy = entity.y - otherentity.y
                 dist = math.sqrt(dx**2 + dy**2)
                 # Apply force when two entities are too close
-                if dist < 30:
-                    entity.vx += (entity.x - otherentity.x) * distancing_strength
-                    entity.vy += (entity.y - otherentity.y) * distancing_strength
+                if dist < SOCIAL_DISTANCING_DISTANCE:
+                    entity.vx += (entity.x - otherentity.x) * SOCIAL_DISTANCING_STRENGTH
+                    entity.vy += (entity.y - otherentity.y) * SOCIAL_DISTANCING_STRENGTH
+
 
 #Creating the 'World' object. Parameters control the number of entities in the simulation
 #as well as the amount of entities that start the simulation 'infected'
 #(In this example, we start with 100 entities, 10 of which are infected)
-sim = World(100, 10)
+sim = World(ENTITIES_TOTAL, ENTITIES_START_INFECTED)
 
 # This while loop handles the display and runs the simulation
 while running:
