@@ -16,7 +16,7 @@ from entity import Entity
 SOCIAL_DISTANCING_STRENGTH = 0.5  # Works best between 0 and 1
 SOCIAL_DISTANCING_DISTANCE = 10  # Radius in pixels
 INFECTION_CHANCE = 5  # in 1000 per frame
-ENTITIES_TOTAL = 200
+ENTITIES_TOTAL = 250
 ENTITIES_START_INFECTED = 7  # Must be less than ENTITIES_TOTAL
 DISEASE_SPREAD = 30  # Radius in pixels
 ENTITY_CURE_SPEED = 10
@@ -105,23 +105,52 @@ class World:
                     entity.vx += (entity.x - otherentity.x) * SOCIAL_DISTANCING_STRENGTH
                     entity.vy += (entity.y - otherentity.y) * SOCIAL_DISTANCING_STRENGTH
 
+class Hud:
+    def __init__(self):
+        self.button_y = 0
+        self.button_x = 0
+        self.button_width = 80
+        self.button_height = 30
+        self.color = Color(200, 0, 0)
+        self.find_position()
+
+    def find_position(self):
+        self.button_y = SCREEN_HEIGHT - self.button_height - 10
+        self.button_x = SCREEN_WIDTH/2 - (self.button_width/2)
+
+    def draw_rerun_button(self):
+        font = pygame.font.Font(None, 30)
+        text = font.render("Restart", True, Color(0, 20, 20))
+        pygame.draw.rect(screen, self.color, Rect(self.button_x, self.button_y, self.button_width, self.button_height))
+        screen.blit(text, (self.button_x + 5, self.button_y + 5))
+
+    def get_rect(self):
+        return Rect(self.button_x, self.button_y, self.button_width, self.button_height)
 
 #Creating the 'World' object. Parameters control the number of entities in the simulation
 #as well as the amount of entities that start the simulation 'infected'
 #(In this example, we start with 100 entities, 10 of which are infected)
 sim = World(ENTITIES_TOTAL, ENTITIES_START_INFECTED)
+hud = Hud()
 
 # This while loop handles the display and runs the simulation
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos  # gets mouse position
+            # checks if mouse position is over the button
+            if hud.get_rect().collidepoint(mouse_pos):
+                sim = World(ENTITIES_TOTAL, ENTITIES_START_INFECTED)
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     # sim = World Object. Controls and draws the simulated entities.
     sim.run()
     sim.draw_entities()
+    hud.draw_rerun_button()
     pygame.display.flip()
+
     # Control frames per second by changing global parameter DT (delta time)
     DT = clock.tick(60) / 1000
 
