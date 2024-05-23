@@ -2,6 +2,8 @@
 ThatsSick
 First draft SIR simulation, for use in education.
 Made at the Hanze university of Applied Sciences.
+U+1F604
+\U0001F605
 
 Version: 1
 Author: Loes Oldhoff
@@ -9,7 +11,8 @@ Author: Loes Oldhoff
 import random
 import math
 import pygame
-from pygame.locals import *
+from pygame.locals import *  #Needed for Color() ??
+import pygame_widgets
 from entity import Entity
 
 # Arbitrary numbers needed for the simulation
@@ -17,7 +20,7 @@ SOCIAL_DISTANCING_STRENGTH = 0.5  # Works best between 0 and 1
 SOCIAL_DISTANCING_DISTANCE = 10  # Radius in pixels
 INFECTION_CHANCE = 5  # in 1000 per frame
 ENTITIES_TOTAL = 250
-ENTITIES_START_INFECTED = 7  # Must be less than ENTITIES_TOTAL
+ENTITIES_START_INFECTED = 5  # Must be less than ENTITIES_TOTAL
 DISEASE_SPREAD = 30  # Radius in pixels
 ENTITY_CURE_SPEED = 10
 
@@ -129,7 +132,6 @@ class Hud:
 
 #Creating the 'World' object. Parameters control the number of entities in the simulation
 #as well as the amount of entities that start the simulation 'infected'
-#(In this example, we start with 100 entities, 10 of which are infected)
 sim = World(ENTITIES_TOTAL, ENTITIES_START_INFECTED)
 hud = Hud()
 
