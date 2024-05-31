@@ -2,8 +2,6 @@
 ThatsSick
 First draft SIR simulation, for use in education.
 Made at the Hanze university of Applied Sciences.
-U+1F604
-\U0001F605
 
 Version: 1
 Author: Loes Oldhoff
@@ -13,16 +11,11 @@ import math
 import pygame
 from pygame.locals import *  #Needed for Color() ??
 import pygame_widgets
+from pygame_widgets.slider import Slider
+from pygame_widgets.textbox import TextBox
 from entity import Entity
 
-# Arbitrary numbers needed for the simulation
-SOCIAL_DISTANCING_STRENGTH = 0.5  # Works best between 0 and 1
-SOCIAL_DISTANCING_DISTANCE = 10  # Radius in pixels
-INFECTION_CHANCE = 5  # in 1000 per frame
-ENTITIES_TOTAL = 250
-ENTITIES_START_INFECTED = 5  # Must be less than ENTITIES_TOTAL
-DISEASE_SPREAD = 30  # Radius in pixels
-ENTITY_CURE_SPEED = 10
+
 
 # pygame setup
 pygame.init()
@@ -42,12 +35,14 @@ class World:
     The disease has no class of its own, it's behaviour is handled
     by World, and individual Entity Objects regulate their own health.
     """
-    def __init__(self, N_of_entities, starting_N_infected):
+    def __init__(self, thehud):
+        self.hud = thehud
         self.entities = []
-        self.starting_N_infected = starting_N_infected
-        for _ in range(N_of_entities):
-            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT, DISEASE_SPREAD, ENTITY_CURE_SPEED))
-        for i in range(starting_N_infected):
+        for _ in range(self.hud.settings['ENTITIES_TOTAL']):
+            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        self.hud.settings['DISEASE_SPREAD'],
+                                        self.hud.settings['ENTITY_CURE_SPEED']))
+        for i in range(self.hud.settings['ENTITIES_START_INFECTED']):
             self.entities[i].infect()
 
     def run(self):
@@ -87,7 +82,7 @@ class World:
                     dist = math.sqrt(dx**2 + dy**2)
                     # Calculate infection chance for close entities
                     if dist < entity.active_spread and dist != 0:
-                        if random.randint(0, 500) < INFECTION_CHANCE:
+                        if random.randint(0, 500) < self.hud.settings['INFECTION_CHANCE']:
                             # And infect em!
                             otherentity.infect()
 
@@ -104,27 +99,72 @@ class World:
                 dy = entity.y - otherentity.y
                 dist = math.sqrt(dx**2 + dy**2)
                 # Apply force when two entities are too close
-                if dist < SOCIAL_DISTANCING_DISTANCE:
-                    entity.vx += (entity.x - otherentity.x) * SOCIAL_DISTANCING_STRENGTH
-                    entity.vy += (entity.y - otherentity.y) * SOCIAL_DISTANCING_STRENGTH
+                if dist < self.hud.settings['SOCIAL_DISTANCING_DISTANCE']:
+                    entity.vx += (entity.x - otherentity.x) * self.hud.settings['SOCIAL_DISTANCING_STRENGTH']
+                    entity.vy += (entity.y - otherentity.y) * self.hud.settings['SOCIAL_DISTANCING_STRENGTH']
 
 class Hud:
+    """
+    Hud handles displaying the Hud (All buttons/sliders in front of the simulation)
+    Also hold the 'settings' and regulates user interaction with the simulation
+    """
     def __init__(self):
+        # Settings
+        self.settings = {
+            'SOCIAL_DISTANCING_STRENGTH': 0.1, # Works best between 0 and 1
+            'SOCIAL_DISTANCING_DISTANCE': 10,  # Radius in pixels
+            'INFECTION_CHANCE': 5,  # in 1000 per frame
+            'ENTITIES_TOTAL': 250,
+            'ENTITIES_START_INFECTED': 5,  # Must be less than ENTITIES_TOTAL
+            'DISEASE_SPREAD': 30,  # Radius in pixels
+            'ENTITY_CURE_SPEED': 10,
+        }
+
+        # Restart button
         self.button_y = 0
         self.button_x = 0
         self.button_width = 80
         self.button_height = 30
         self.color = Color(200, 0, 0)
-        self.find_position()
 
-    def find_position(self):
+        # Slider box
+        self.slider_box_x = 0
+        self.slider_box_y = 0
+        self.slider_box_width = 0
+        self.slider_box_height = 0
+
+        self.find_positions()
+
+        self.socialdistance_text = TextBox(screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 1, fontSize=15)
+        self.socialdistance_text.setText("Social Distancing")
+        self.socialdistance_slider = Slider(screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 5, min=1, max=100, step=1)
+        self.socialdistance_output = TextBox(screen, self.slider_box_x + 120, self.slider_box_y + 5, 25, 25, fontSize=15)
+
+    def find_positions(self):
+        # Restart button
         self.button_y = SCREEN_HEIGHT - self.button_height - 10
-        self.button_x = SCREEN_WIDTH/2 - (self.button_width/2)
+        self.button_x = SCREEN_WIDTH/2 - (self.button_width/3)
 
-    def draw_rerun_button(self):
+        # Slider Box
+        self.slider_box_x = int(SCREEN_WIDTH/100)
+        self.slider_box_y = int(SCREEN_HEIGHT - (SCREEN_HEIGHT/3))
+        self.slider_box_width = SCREEN_WIDTH/6
+        self.slider_box_height = SCREEN_HEIGHT - int(SCREEN_HEIGHT - (SCREEN_HEIGHT/3)) - 10
+
+    def draw_hud(self):
+        # Draw Rerun Button
         font = pygame.font.Font(None, 30)
         text = font.render("Restart", True, Color(0, 20, 20))
         pygame.draw.rect(screen, self.color, Rect(self.button_x, self.button_y, self.button_width, self.button_height))
+
+        # Draw Sliderbox
+        pygame.draw.rect(screen, Color(200, 150, 150), Rect(self.slider_box_x, self.slider_box_y, self.slider_box_width, self.slider_box_height))
+        self.socialdistance_output.setText(self.socialdistance_slider.getValue())
+        SOCIAL_DISTANCING_STRENGTH = 1/self.socialdistance_slider.getValue()
+        self.socialdistance_slider.draw()
+        self.socialdistance_output.draw()
+
+        # Blit it
         screen.blit(text, (self.button_x + 5, self.button_y + 5))
 
     def get_rect(self):
@@ -132,25 +172,27 @@ class Hud:
 
 #Creating the 'World' object. Parameters control the number of entities in the simulation
 #as well as the amount of entities that start the simulation 'infected'
-sim = World(ENTITIES_TOTAL, ENTITIES_START_INFECTED)
-hud = Hud()
+thehud = Hud()
+sim = World(thehud)
 
 # This while loop handles the display and runs the simulation
 while running:
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = event.pos  # gets mouse position
             # checks if mouse position is over the button
-            if hud.get_rect().collidepoint(mouse_pos):
-                sim = World(ENTITIES_TOTAL, ENTITIES_START_INFECTED)
+            if sim.hud.get_rect().collidepoint(mouse_pos):
+                sim = World(thehud)
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     # sim = World Object. Controls and draws the simulated entities.
     sim.run()
     sim.draw_entities()
-    hud.draw_rerun_button()
+    sim.hud.draw_hud()
+    pygame_widgets.update(events)
     pygame.display.flip()
 
     # Control frames per second by changing global parameter DT (delta time)
