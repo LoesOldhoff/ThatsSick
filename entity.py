@@ -11,23 +11,23 @@ class Entity:
     It is unable to interact with other Entity object.
     """
     def __init__(self, screen_width, screen_height, spread, cure_speed, size=4, color=Color(0, 255, 255)):
-        #Position and destination
+        # Position and destination
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.x = random.randint(0, screen_width)
         self.y = random.randint(0, screen_height)
         self.x_destination = random.randint(10, screen_width - 10)
         self.y_destination = random.randint(10, screen_height - 10)
-        #Speed and velocity
+        # Speed and velocity
         self.vx = 0
         self.vy = 0
         self.maxspeed = 3
         self.minspeed = 0.5
         self.drag = 0.5
-        #Looks
+        # Looks
         self.size = size
         self.color = color
-        #Status
+        # Status
         self.infected = False
         self.immune = False
         self.spread = spread

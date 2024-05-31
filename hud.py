@@ -3,6 +3,7 @@ from pygame.locals import *
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 
+
 class Hud:
     """
     Hud handles displaying the Hud (All buttons/sliders in front of the simulation)
@@ -36,6 +37,7 @@ class Hud:
         self.slider_box_width = 0
         self.slider_box_height = 0
 
+        # Find position of elements based on screen dimensions
         self.find_positions()
 
         self.sdstrength_text = TextBox(self.screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 1, fontSize=15)
@@ -59,6 +61,14 @@ class Hud:
         self.curespeed_output = TextBox(self.screen, self.slider_box_x + 120, self.slider_box_y + 80, 25, 25, fontSize=15)
 
     def find_positions(self):
+        """
+        Uses the dimensions of the screen to find the coordinates for various hud
+        elements. Currently positions:
+        - Restart button
+        - Slider box
+
+        Meant to be run once upon Instance Creation
+        """
         # Restart button
         self.button_y = self.screen_height - self.button_height - 10
         self.button_x = self.screen_height/2 - (self.button_width/3)
@@ -70,6 +80,13 @@ class Hud:
         self.slider_box_height = self.screen_height - int(self.screen_height - (self.screen_height/3)) - 10
 
     def draw_hud(self):
+        """
+        Draws the various hud elements. Currently draws:
+        - Rerun Button
+        - Sliderbox
+        - Sliders & slider elements (4)
+        """
+
         # Draw Rerun Button
         font = pygame.font.Font(None, 30)
         text = font.render("Restart", True, Color(0, 20, 20))
@@ -102,5 +119,6 @@ class Hud:
         # Blit it
         self.screen.blit(text, (self.button_x + 5, self.button_y + 5))
 
-    def get_rect(self):
+    def get_restart_rect(self):
+        """ Returns the location of the Restart Button """
         return Rect(self.button_x, self.button_y, self.button_width, self.button_height)
