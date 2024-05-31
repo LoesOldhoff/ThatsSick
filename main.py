@@ -15,8 +15,6 @@ from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 from entity import Entity
 
-
-
 # pygame setup
 pygame.init()
 SCREEN_WIDTH = 900
@@ -25,6 +23,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 running = True
 DT = 0 #delta time
+
 
 class World:
     """
@@ -103,6 +102,7 @@ class World:
                     entity.vx += (entity.x - otherentity.x) * self.hud.settings['SOCIAL_DISTANCING_STRENGTH']
                     entity.vy += (entity.y - otherentity.y) * self.hud.settings['SOCIAL_DISTANCING_STRENGTH']
 
+
 class Hud:
     """
     Hud handles displaying the Hud (All buttons/sliders in front of the simulation)
@@ -111,7 +111,7 @@ class Hud:
     def __init__(self):
         # Settings
         self.settings = {
-            'SOCIAL_DISTANCING_STRENGTH': 0.1, # Works best between 0 and 1
+            'SOCIAL_DISTANCING_STRENGTH': 0.1,  # Works best between 0 and 1
             'SOCIAL_DISTANCING_DISTANCE': 10,  # Radius in pixels
             'INFECTION_CHANCE': 5,  # in 1000 per frame
             'ENTITIES_TOTAL': 250,
@@ -135,10 +135,25 @@ class Hud:
 
         self.find_positions()
 
-        self.socialdistance_text = TextBox(screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 1, fontSize=15)
-        self.socialdistance_text.setText("Social Distancing")
-        self.socialdistance_slider = Slider(screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 5, min=1, max=100, step=1)
-        self.socialdistance_output = TextBox(screen, self.slider_box_x + 120, self.slider_box_y + 5, 25, 25, fontSize=15)
+        self.sdstrength_text = TextBox(screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 1, fontSize=15)
+        self.sdstrength_text.setText("Social Distancing")
+        self.sdstrength_slider = Slider(screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 5, min=1, max=100, step=1)
+        self.sdstrength_output = TextBox(screen, self.slider_box_x + 120, self.slider_box_y + 5, 25, 25, fontSize=15)
+
+        self.sddistance_text = TextBox(screen, self.slider_box_x + 10, self.slider_box_y + 45, 100, 1, fontSize=15)
+        self.sddistance_text.setText("Social Distance")
+        self.sddistance_slider = Slider(screen, self.slider_box_x + 10, self.slider_box_y + 45, 100, 5, min=1, max=50, step=1)
+        self.sddistance_output = TextBox(screen, self.slider_box_x + 120, self.slider_box_y + 30, 25, 25, fontSize=15)
+
+        self.diseasespread_text = TextBox(screen, self.slider_box_x + 10, self.slider_box_y + 70, 100, 1, fontSize=15)
+        self.diseasespread_text.setText("Disease Spread")
+        self.diseasespread_slider = Slider(screen, self.slider_box_x + 10, self.slider_box_y + 70, 100, 5, min=1, max=50, step=1)
+        self.diseasespread_output = TextBox(screen, self.slider_box_x + 120, self.slider_box_y + 55, 25, 25, fontSize=15)
+
+        self.curespeed_text = TextBox(screen, self.slider_box_x + 10, self.slider_box_y + 95, 100, 1, fontSize=15)
+        self.curespeed_text.setText("Cure Speed")
+        self.curespeed_slider = Slider(screen, self.slider_box_x + 10, self.slider_box_y + 95, 100, 5, min=1, max=30, step=1)
+        self.curespeed_output = TextBox(screen, self.slider_box_x + 120, self.slider_box_y + 80, 25, 25, fontSize=15)
 
     def find_positions(self):
         # Restart button
@@ -159,10 +174,27 @@ class Hud:
 
         # Draw Sliderbox
         pygame.draw.rect(screen, Color(200, 150, 150), Rect(self.slider_box_x, self.slider_box_y, self.slider_box_width, self.slider_box_height))
-        self.socialdistance_output.setText(self.socialdistance_slider.getValue())
-        SOCIAL_DISTANCING_STRENGTH = 1/self.socialdistance_slider.getValue()
-        self.socialdistance_slider.draw()
-        self.socialdistance_output.draw()
+
+        # Draw Sliders
+        self.sdstrength_output.setText(self.sdstrength_slider.getValue())
+        self.settings['SOCIAL_DISTANCING_STRENGTH'] = self.sdstrength_slider.getValue() / 100
+        self.sdstrength_slider.draw()
+        self.sdstrength_output.draw()
+
+        self.sddistance_output.setText(self.sddistance_slider.getValue())
+        self.settings['SOCIAL_DISTANCING_DISTANCE'] = self.sddistance_slider.getValue()
+        self.sddistance_slider.draw()
+        self.sddistance_output.draw()
+
+        self.diseasespread_output.setText(self.diseasespread_slider.getValue())
+        self.settings['DISEASE_SPREAD'] = self.diseasespread_slider.getValue()
+        self.diseasespread_slider.draw()
+        self.diseasespread_output.draw()
+
+        self.curespeed_output.setText(self.curespeed_slider.getValue())
+        self.settings['ENTITY_CURE_SPEED'] = self.curespeed_slider.getValue()
+        self.curespeed_slider.draw()
+        self.curespeed_output.draw()
 
         # Blit it
         screen.blit(text, (self.button_x + 5, self.button_y + 5))
@@ -186,6 +218,7 @@ while running:
             # checks if mouse position is over the button
             if sim.hud.get_rect().collidepoint(mouse_pos):
                 sim = World(thehud)
+                print(thehud.settings)
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     # sim = World Object. Controls and draws the simulated entities.
