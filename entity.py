@@ -30,21 +30,18 @@ class Entity:
         # Status
         self.infected = False
         self.immune = False
-        self.spread = spread
         self.active_spread = 0
-        self.cure_speed = cure_speed
         self.infection_time = random.randint(500, 5000)
 
-    def update_status(self):
+    def update_status(self, cure_speed):
         """
         Updates the Entities' status. This function should only be called on
         entities that have been infected to check the growth of their infection
         radius and count down their time-till-cured.
         Will render entities 'immune' once their timers run out.
         """
-        if self.active_spread <= self.spread:
-            self.active_spread += 0.3
-        self.infection_time -= self.cure_speed
+
+        self.infection_time -= cure_speed
         if self.infection_time <= 0:
             self.immune = True
             self.color = Color(0, 100, 200)

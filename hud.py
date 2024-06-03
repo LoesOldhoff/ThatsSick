@@ -42,7 +42,7 @@ class Hud:
 
         self.sdstrength_text = TextBox(self.screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 1, fontSize=15)
         self.sdstrength_text.setText("Social Distancing")
-        self.sdstrength_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 5, min=1, max=100, step=1)
+        self.sdstrength_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 5, min=1, max=10, step=1)
         self.sdstrength_output = TextBox(self.screen, self.slider_box_x + 120, self.slider_box_y + 5, 25, 25, fontSize=15)
 
         self.sddistance_text = TextBox(self.screen, self.slider_box_x + 10, self.slider_box_y + 45, 100, 1, fontSize=15)
