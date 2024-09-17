@@ -36,9 +36,7 @@ class World:
         self.hud = thehud
         self.entities = []
         for _ in range(self.hud.settings['ENTITIES_TOTAL']):
-            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT,
-                                        self.hud.settings['DISEASE_SPREAD'],
-                                        self.hud.settings['ENTITY_CURE_SPEED']))
+            self.entities.append(Entity(SCREEN_WIDTH, SCREEN_HEIGHT))
         for i in range(self.hud.settings['ENTITIES_START_INFECTED']):
             self.entities[i].infect()
 
