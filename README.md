@@ -18,9 +18,7 @@ In order for this simulation to work, a few Infected entities need to be present
 If you have acquired this code, chances are you are a bio-informatics student at the Hanze University of applied sciences. 
 If this is the case, you are hereby invited to take and edit this code to your hearts content. Scattered throughout this project 
 are #TODO prompts, with ideas on how this model can be improved. But naturally, creativity is encouraged and appreciated. Don't
-be afraid to break things, you can always re-clone. 
-
-
+be afraid to break things, you can always re-clone.
 
 
 

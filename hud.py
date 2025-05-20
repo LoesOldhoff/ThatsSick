@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import *
+from pygame.locals import Color, Rect
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 
@@ -7,7 +7,7 @@ from pygame_widgets.textbox import TextBox
 class Hud:
     """
     Hud handles displaying the Hud (All buttons/sliders in front of the simulation)
-    Also hold the 'settings' and regulates user interaction with the simulation
+    Also holds the 'settings' and regulates user interaction with the simulation
     """
     def __init__(self, screen, screen_width, screen_height):
         self.screen = screen
@@ -40,6 +40,7 @@ class Hud:
         # Find position of elements based on screen dimensions
         self.find_positions()
 
+        #TODO function this
         self.sdstrength_text = TextBox(self.screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 1, fontSize=15)
         self.sdstrength_text.setText("Social Distancing")
         self.sdstrength_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 20, 100, 5, min=1, max=10, step=1)
@@ -96,6 +97,7 @@ class Hud:
         pygame.draw.rect(self.screen, Color(200, 150, 150), Rect(self.slider_box_x, self.slider_box_y, self.slider_box_width, self.slider_box_height))
 
         # Draw Sliders
+        #TODO function this as well
         self.sdstrength_output.setText(self.sdstrength_slider.getValue())
         self.settings['SOCIAL_DISTANCING_STRENGTH'] = self.sdstrength_slider.getValue() / 100
         self.sdstrength_slider.draw()
