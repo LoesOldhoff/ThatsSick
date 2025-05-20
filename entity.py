@@ -1,5 +1,5 @@
 import random
-from pygame.locals import *
+from pygame.locals import Color
 
 
 class Entity:
@@ -9,6 +9,8 @@ class Entity:
     (aka on the screen) but besides that contains only information about its own status.
     Needs to be given Screen width and height upon initiation in order to generate correct coordinates.
     It is unable to interact with other Entity object.
+    Each Entity has a destination it will try to move towards. Once its destination is reached
+    a new destination will be generated.
     """
     def __init__(self, screen_width, screen_height, size=4, color=Color(0, 255, 255)):
         # Position and destination
@@ -53,6 +55,7 @@ class Entity:
         self.y += y
 
     def go_to_destination_w_velocity(self):
+        #TODO implement a different random walk (Maybe each entity has a home location they return to)
         """
         Implements a 'random walk' by assigning Entity a 'destination' to move to.
         Destinations are randomly assigned within the boundaries of the screen
@@ -100,3 +103,5 @@ class Entity:
         """ Infect the entity, changing its color (to orange, currently) """
         self.infected = True
         self.color = Color(250, 200, 0)
+
+    #TODO implement death
