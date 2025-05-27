@@ -1,8 +1,27 @@
 import random
+
+import pygame
 from pygame.locals import Color
 
 
 class Entity:
+    screen_width: int
+    screen_height: int
+    x: float
+    y: float
+    x_destination: float
+    y_destination: float
+    vx: float
+    vy: float
+    maxspeed: float
+    minspeed: float
+    drag: float
+    size: int
+    color: pygame.Color
+    infected: bool
+    immune: bool
+    active_spread: float
+    infection_time: int
     """
     Models an entity (human) in the SIR model.
     Entity contains information about its own position in the 'World'
@@ -67,8 +86,8 @@ class Entity:
         and implementing 'drag' to fake air resistance.
         """
         #pygame.draw.circle(screen, Color(10, 10, 10), (self.x_destination, self.y_destination), 2)
-        dx = self.x_destination - self.x
-        dy = self.y_destination - self.y
+        dx: float = self.x_destination - self.x
+        dy: float = self.y_destination - self.y
         self.vx += dx/400
         self.vy += dy/400
         if abs(dx) <= 40 and abs(dy) <= 40:

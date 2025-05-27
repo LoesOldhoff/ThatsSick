@@ -12,18 +12,21 @@ import pygame
 import pygame_widgets
 from hud import Hud
 from entity import Entity
+from typing import List
 
 # pygame setup
 pygame.init()
-SCREEN_WIDTH = 900
-SCREEN_HEIGHT = 600
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-clock = pygame.time.Clock()
-running = True
-DT = 0  # delta time
+SCREEN_WIDTH: int = 900
+SCREEN_HEIGHT: int = 600
+SCREEN: pygame.Surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock: pygame.time.Clock = pygame.time.Clock()
+running: bool = True
+DT: float = 0  # delta time
 
 
 class World:
+    hud: Hud
+    entities: List[Entity]
     """
     World controls the simulation.
     It contains a list of entities and handles controlling and
@@ -63,7 +66,7 @@ class World:
             if entity.infected:
                 pygame.draw.circle(SCREEN, entity.color, (entity.x, entity.y), entity.active_spread, 1)
 
-    def spread_disease(self):
+    def spread_disease(self) -> None:
         """
         Can be used to spread the disease within a World simulation.
         """
@@ -74,16 +77,17 @@ class World:
                 for otherentity in self.entities:
                     if otherentity.immune:
                         continue
-                    dx = entity.x - otherentity.x
-                    dy = entity.y - otherentity.y
-                    dist = math.sqrt(dx**2 + dy**2)
+                    dx: float = entity.x - otherentity.x
+                    dy: float = entity.y - otherentity.y
+                    dist: float = math.sqrt(dx**2 + dy**2)
                     # Calculate infection chance for close entities
                     if dist < entity.active_spread and dist != 0:
                         if random.randint(0, 500) < self.hud.settings['INFECTION_CHANCE']:
                             # And infect em!
                             otherentity.infect()
 
-    def social_distance(self):
+    #TODO Reverse this behaviour in Infected for Zombie Mode
+    def social_distance(self) -> None:
         """
         Can be used to make Entities avoid each other.
         Change 'distancing_strength' to control the strength of this effect.
@@ -92,29 +96,28 @@ class World:
         # Check distance between all entities
         for entity in self.entities:
             for otherentity in self.entities:
-                dx = entity.x - otherentity.x
-                dy = entity.y - otherentity.y
-                dist = math.sqrt(dx**2 + dy**2)
+                dx: float = entity.x - otherentity.x
+                dy: float = entity.y - otherentity.y
+                dist: float = math.sqrt(dx**2 + dy**2)
                 # Apply force when two entities are too close
                 if dist < self.hud.settings['SOCIAL_DISTANCING_DISTANCE']:
                     entity.vx += (entity.x - otherentity.x) * self.hud.settings['SOCIAL_DISTANCING_STRENGTH']
                     entity.vy += (entity.y - otherentity.y) * self.hud.settings['SOCIAL_DISTANCING_STRENGTH']
 
-
-thishud = Hud(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT)
-sim = World(thishud)
+thishud: Hud = Hud(SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT)
+sim: World = World(thishud)
 
 # This while loop handles the display and runs the simulation
 while running:
-    events = pygame.event.get()
+    events: list[pygame.event] = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = event.pos  # gets mouse position
+            mouse_pos: tuple = event.pos  # gets mouse position
             # checks if mouse position is over the button
             if sim.hud.get_restart_rect().collidepoint(mouse_pos):
-                sim = World(thishud)
+                sim: World = World(thishud)
                 print(sim.hud.settings)
     # fill the screen with a color to wipe away anything from last frame
     SCREEN.fill("black")

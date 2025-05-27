@@ -3,13 +3,18 @@ from pygame.locals import Color, Rect
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 
-
 class Hud:
+    # Annotations here or in the init??? #TODO figure out field standard for type annot
+    # Seen in done in 3 different ways so far: below class call, at init arguments and in init def
+    screen: pygame.Surface
+    screen_width: int
+    screen_height: int
+    settings: dict
     """
     Hud handles displaying the Hud (All buttons/sliders in front of the simulation)
     Also holds the 'settings' and regulates user interaction with the simulation
     """
-    def __init__(self, screen, screen_width, screen_height):
+    def __init__(self, screen: pygame.Surface, screen_width: int, screen_height: int) -> None:
         self.screen = screen
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -61,7 +66,7 @@ class Hud:
         self.curespeed_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 95, 100, 5, min=1, max=30, step=1)
         self.curespeed_output = TextBox(self.screen, self.slider_box_x + 120, self.slider_box_y + 80, 25, 25, fontSize=15)
 
-    def find_positions(self):
+    def find_positions(self) -> None:
         """
         Uses the dimensions of the screen to find the coordinates for various hud
         elements. Currently positions:
@@ -80,7 +85,7 @@ class Hud:
         self.slider_box_width = self.screen_width/6
         self.slider_box_height = self.screen_height - int(self.screen_height - (self.screen_height/3)) - 10
 
-    def draw_hud(self):
+    def draw_hud(self) -> None:
         """
         Draws the various hud elements. Currently draws:
         - Rerun Button
@@ -121,6 +126,6 @@ class Hud:
         # Blit it
         self.screen.blit(text, (self.button_x + 5, self.button_y + 5))
 
-    def get_restart_rect(self):
+    def get_restart_rect(self) -> pygame.Rect:
         """ Returns the location of the Restart Button """
         return Rect(self.button_x, self.button_y, self.button_width, self.button_height)
