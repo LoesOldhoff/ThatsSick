@@ -123,8 +123,7 @@ while running:
     sim.draw_entities()
     sim.hud.draw_hud()
     pygame_widgets.update(events)
-    pygame.display.flip()
-
+    pygame.display.update()
     # Control frames per second by changing global parameter DT (delta time)
     DT = clock.tick(60) / 1000
 
