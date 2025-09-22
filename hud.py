@@ -24,6 +24,7 @@ class Hud:
             'ENTITIES_START_INFECTED': 5,  # Must be less than ENTITIES_TOTAL
             'DISEASE_SPREAD': 30,  # Radius in pixels
             'ENTITY_CURE_SPEED': 10,
+            'DISEASE_DEADLINESS': 0
         }
 
         # Restart button
@@ -46,6 +47,7 @@ class Hud:
         self.sddistance_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 45, 100, 5, min=1, max=50, step=1)
         self.diseasespread_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 70, 100, 5, min=1, max=50, step=1)
         self.curespeed_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 95, 100, 5, min=1, max=30, step=1)
+        self.deadly_slider = Slider(self.screen, self.slider_box_x + 10, self.slider_box_y + 120, 100, 5, min=1, max=20, step=1, initial=0)
         #TODO (Maybe make custom sliders I don't trust this widgets library)
 
     def find_positions(self):
@@ -94,7 +96,6 @@ class Hud:
         self.screen.blit(sddistancingtext, (self.slider_box_x + 10, self.slider_box_y + 5))
         self.screen.blit(sdsetting, (self.slider_box_x + 125, self.slider_box_y + 15))
 
-
         sddistancetext = labelfont.render("Social Distance", True, Color(0, 20, 20))
         sddistancesetting = labelfont.render(str(self.sddistance_slider.getValue()), True, Color(0, 20, 20))
         self.settings['SOCIAL_DISTANCING_DISTANCE'] = self.sddistance_slider.getValue()
@@ -113,10 +114,11 @@ class Hud:
         self.screen.blit(curespeedsetting, (self.slider_box_x + 125, self.slider_box_y + 90))
         self.screen.blit(curespeedtext, (self.slider_box_x + 10, self.slider_box_y + 80))
 
-        #self.sddistance_output.setText(str(self.sddistance_slider.getValue()))
-        #self.sdstrength_output.setText('Hello World')
-        #self.diseasespread_output.setText(str(self.diseasespread_slider.getValue()))
-        #self.curespeed_output.setText(str(self.curespeed_slider.getValue()))
+        deadlytext = labelfont.render("Deadliness", True, Color(0, 20, 20))
+        deadlysetting = labelfont.render(str(self.deadly_slider.getValue()), True, Color(0, 20, 20))
+        self.settings['DISEASE_DEADLINESS'] = self.deadly_slider.getValue()
+        self.screen.blit(deadlysetting, (self.slider_box_x + 125, self.slider_box_y + 115))
+        self.screen.blit(deadlytext, (self.slider_box_x + 10, self.slider_box_y + 105))
 
     def get_restart_rect(self):
         """ Returns the location of the Restart Button """

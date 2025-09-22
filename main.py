@@ -46,11 +46,12 @@ class World:
         each tick. Also spreads disease and applies social distancing.
         """
         for entity in self.entities:
-            entity.go_to_destination_w_velocity()
+            if entity.alive:
+                entity.go_to_destination_w_velocity()
             if entity.infected and not entity.immune:
                 if entity.active_spread < self.hud.settings["DISEASE_SPREAD"]:
                     entity.active_spread += 0.3
-                entity.update_status(self.hud.settings['ENTITY_CURE_SPEED'])
+                entity.update_status(self.hud.settings['ENTITY_CURE_SPEED'], self.hud.settings['DISEASE_DEADLINESS'])
         self.social_distance()
         self.spread_disease()
 
@@ -115,7 +116,7 @@ while running:
             # checks if mouse position is over the button
             if sim.hud.get_restart_rect().collidepoint(mouse_pos):
                 sim = World(thishud)
-                print(sim.hud.settings)
+                #print(sim.hud.settings)
     # fill the screen with a color to wipe away anything from last frame
     SCREEN.fill("black")
     # sim = World Object. Controls and draws the simulated entities.
