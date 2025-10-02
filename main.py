@@ -73,7 +73,7 @@ class World:
                 # If an entity is infected, check all other entities to find
                 # the ones in the infected's radius
                 for otherentity in self.entities:
-                    if otherentity.immune:
+                    if otherentity.immune or not otherentity.alive:
                         continue
                     dx = entity.x - otherentity.x
                     dy = entity.y - otherentity.y
