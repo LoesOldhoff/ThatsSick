@@ -42,7 +42,7 @@ class Entity:
         Updates the Entities' status. This function should only be called on
         entities that have been infected to check the growth of their infection
         radius and count down their time-till-cured.
-        Will render entities 'immune' once their timers run out.
+        Will render entities either 'immune' or 'dead' once one of their timers run out.
         """
         self.hp -= deadliness
         if self.hp < 0:

@@ -1,7 +1,6 @@
 import pygame
 from pygame.locals import Color, Rect
 from pygame_widgets.slider import Slider
-from pygame_widgets.textbox import TextBox
 
 
 class Hud:
@@ -74,7 +73,7 @@ class Hud:
         Draws the various hud elements. Currently draws:
         - Rerun Button
         - Sliderbox
-        - Sliders & slider elements (4)
+        - Sliders & slider elements (5)
         """
 
         # Draw Rerun Button
